@@ -1,31 +1,49 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Calendar, ListTodo, Plus, Clock, Bell, Users, Settings, MessageSquare, User, X } from 'lucide-react';
+import { Task, fetchAllTasks, createTask } from '../lib/supabase/tasks';
+import {
+  ChevronLeft,
+  Calendar,
+  ListTodo,
+  Plus,
+  Clock,
+  Users,
+  Settings,
+  MessageSquare,
+  User,
+  X,
+} from 'lucide-react';
 import Header from '@/components/layout/Header';
+import {
+  fetchAllMembers,
+  fetchAllMembersBasedOnPoints,
+  Member,
+} from '../lib/supabase/members';
 
 const TasksPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
-  const [tasks, setTasks] = useState([
-    { name: 'Workout', time: '8:00 am' },
-    { name: 'Run', time: '10:00 am' },
-    { name: 'Buy Groceries', time: null },
-    { name: 'Learn Photoshop', time: null },
-    { name: 'Read', time: '1:00 pm' },
-    { name: 'Recovery', time: '5:00 pm' },
-    { name: 'Pray', time: null },
-  ]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  const members = ['Ahad Malik', 'Syed Basim', 'Md Suhaib', 'Haseeb Wajid', 'Abdul Parveez', 'Md Shakeeb'];
+  useEffect(() => {
+    fetchAllMembersBasedOnPoints().then((fetchedMembers) => {
+      setMembers(fetchedMembers as Member[]);
+    });
 
-  const handleAddTask = () => {
-    if (newTaskName.trim() !== '') {
-      setTasks([...tasks, { name: newTaskName, time: null }]);
-      setNewTaskName('');
-      setIsModalOpen(false);
-    }
+    fetchAllTasks().then((fetchedTasks) => {
+      setTasks(fetchedTasks as Task[]);
+    });
+  }, []);
+
+  const handleAddTask = async () => {
+    if (newTaskName.trim() === '') return;
+
+    await createTask({ name: newTaskName });
+    setNewTaskName('');
+    setIsModalOpen(false);
   };
 
   return (
@@ -34,16 +52,29 @@ const TasksPage = () => {
       <div className="flex-1 flex">
         {/* Left Sidebar */}
         <div className="w-48 bg-[#121212] p-4 flex flex-col">
-          <h2 className="text-lg font-bold mb-4 flex items-center"><Users className="mr-2 h-5 w-5" /> Members</h2>
+          <h2 className="text-lg font-bold mb-4 flex items-center">
+            <Users className="mr-2 h-5 w-5" /> Members
+          </h2>
           <ul className="space-y-2 flex-grow">
             {members.map((member, index) => (
-              <li key={index} className="py-1 px-2 hover:bg-[#2A2A2A] rounded text-sm">{member}</li>
+              <li
+                key={index}
+                className="py-1 px-2 hover:bg-[#2A2A2A] rounded text-sm"
+              >
+                {member.user.name}
+              </li>
             ))}
           </ul>
           <div className="flex justify-between mt-4">
-            <Link href="/profile"> <User className="h-5 w-5 hover:text-[#39FF14]" /> </Link>
+            <Link href="/profile">
+              {' '}
+              <User className="h-5 w-5 hover:text-[#39FF14]" />{' '}
+            </Link>
             <MessageSquare className="h-5 w-5" />
-            <Link href="/settings"> <Settings className="h-5 w-5 hover:text-[#39FF14]" /> </Link>
+            <Link href="/settings">
+              {' '}
+              <Settings className="h-5 w-5 hover:text-[#39FF14]" />{' '}
+            </Link>
           </div>
         </div>
 
@@ -65,7 +96,6 @@ const TasksPage = () => {
             <h3 className="text-xl font-bold">Cardio and HIIT Workout</h3>
             <div className="absolute bottom-4 right-4 flex items-center">
               <Clock className="h-5 w-5 mr-2" />
-              <span>7:15 am</span>
             </div>
           </div>
 
@@ -83,13 +113,11 @@ const TasksPage = () => {
           <h3 className="text-xl font-bold mb-4">Upcoming</h3>
           <div className="grid grid-cols-4 gap-4">
             {tasks.map((task, index) => (
-              <div key={index} className="bg-[#39FF14] p-4 rounded-lg text-black relative">
+              <div
+                key={index}
+                className="bg-[#39FF14] p-4 rounded-lg text-black relative"
+              >
                 <h4 className="text-lg font-bold">{task.name}</h4>
-                {task.time && (
-                  <div className="absolute bottom-2 right-2 text-sm">
-                    {task.time}
-                  </div>
-                )}
               </div>
             ))}
             <div
@@ -109,7 +137,10 @@ const TasksPage = () => {
           <div className="bg-[#121212] p-6 rounded-lg w-96">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">Add New Task</h3>
-              <X className="cursor-pointer" onClick={() => setIsModalOpen(false)} />
+              <X
+                className="cursor-pointer"
+                onClick={() => setIsModalOpen(false)}
+              />
             </div>
             <input
               type="text"

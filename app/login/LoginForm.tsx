@@ -3,6 +3,22 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Lock } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+
+const loginWithEmailAndPassword = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  const { data } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  console.log('data after auth', data);
+};
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -12,6 +28,9 @@ const LoginForm = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Login attempted with:', { email, password });
+
+    await loginWithEmailAndPassword({ email, password });
+
     router.push('/teams');
   };
 
@@ -33,7 +52,10 @@ const LoginForm = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <User
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
           </div>
         </div>
         <div className="mb-6">
@@ -50,7 +72,10 @@ const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Lock
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
           </div>
         </div>
         <button

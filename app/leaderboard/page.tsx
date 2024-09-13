@@ -1,20 +1,18 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { ChevronLeft, Star, Settings } from 'lucide-react';
 import Link from 'next/link';
+import { fetchAllMembersBasedOnPoints, Member } from '../lib/supabase/members';
 
 const ScoreboardPage = () => {
-  const clanMembers = [
-    { name: 'Ahad Malik', points: 2500 },
-    { name: 'Syed Basim', points: 2300 },
-    { name: 'Md Suhaib', points: 2100 },
-    { name: 'Haseeb Wajid', points: 2000 },
-    { name: 'Abdul Parveez', points: 1900 },
-    { name: 'Md Shakeeb', points: 1800 },
-    { name: 'Faisal Khan', points: 1700 },
-    { name: 'Zain Ahmed', points: 1600 },
-    { name: 'Omar Farooqi', points: 1500 },
-    { name: 'Yasir Ali', points: 1400 },
-  ];
+  const [members, setMembers] = useState<Member[]>([]);
+
+  useEffect(() => {
+    fetchAllMembersBasedOnPoints().then((fetchedMembers) => {
+      setMembers(fetchedMembers as Member[]);
+    });
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-black text-white overflow-hidden">
@@ -24,7 +22,10 @@ const ScoreboardPage = () => {
           <ChevronLeft className="h-6 w-6 hover:text-[#39FF14]" />
         </Link>
         <h1 className="text-xl font-bold">PERSEVERE PRO</h1>
-        <Link href="/settings"> <Settings className="h-6 w-6 hover:text-[#39FF14]" /> </Link> 
+        <Link href="/settings">
+          {' '}
+          <Settings className="h-6 w-6 hover:text-[#39FF14]" />{' '}
+        </Link>
       </header>
 
       {/* Main Content */}
@@ -40,14 +41,22 @@ const ScoreboardPage = () => {
           {/* Scoreboard */}
           <div className="flex-1 max-w-3xl bg-[#1E1E1E] rounded-lg p-4 mr-4">
             <div className="grid grid-cols-3 gap-2 mb-2 text-xs font-bold">
-              <div className="bg-[#2A2A2A] p-2 rounded text-center">CLAN MEMBERS</div>
+              <div className="bg-[#2A2A2A] p-2 rounded text-center">
+                CLAN MEMBERS
+              </div>
               <div className="bg-[#2A2A2A] p-2 rounded text-center">POINTS</div>
-              <div className="bg-[#2A2A2A] p-2 rounded text-center">RANKING</div>
+              <div className="bg-[#2A2A2A] p-2 rounded text-center">
+                RANKING
+              </div>
             </div>
-            {clanMembers.map((member, index) => (
+            {members.map((member, index) => (
               <div key={index} className="grid grid-cols-3 gap-2 mb-2">
-                <div className="bg-[#39FF14] text-black p-2 rounded text-sm">{member.name}</div>
-                <div className="bg-[#39FF14] text-black p-2 rounded text-center text-sm">{member.points}</div>
+                <div className="bg-[#39FF14] text-black p-2 rounded text-sm">
+                  {member.user.name}
+                </div>
+                <div className="bg-[#39FF14] text-black p-2 rounded text-center text-sm">
+                  {member.points}
+                </div>
                 <div className="bg-[#39FF14] text-black p-2 rounded text-center font-bold text-sm">
                   #{index + 1}
                 </div>
@@ -58,10 +67,12 @@ const ScoreboardPage = () => {
           {/* Top 3 Rankings */}
           <div className="w-64 bg-[#121212] p-4 rounded-lg">
             <h3 className="text-lg font-bold mb-3">Top 3</h3>
-            {clanMembers.slice(0, 3).map((member, index) => (
+            {members.slice(0, 3).map((member, index) => (
               <div key={index} className="mb-3 bg-[#2A2A2A] p-3 rounded-lg">
-                <h4 className="text-sm font-semibold mb-1 bg-[#39FF14] text-black px-2 py-1 rounded">#{index + 1}</h4>
-                <p className="text-sm truncate">{member.name}</p>
+                <h4 className="text-sm font-semibold mb-1 bg-[#39FF14] text-black px-2 py-1 rounded">
+                  #{index + 1}
+                </h4>
+                <p className="text-sm truncate">{member.user.name}</p>
                 <p className="text-sm font-bold">{member.points} pts</p>
               </div>
             ))}
