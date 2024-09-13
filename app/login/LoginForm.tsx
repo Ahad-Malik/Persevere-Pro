@@ -12,7 +12,7 @@ const LoginForm = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Login attempted with:', { email, password });
-    router.push('/dashboard');
+    router.push('/teams');
   };
 
   return (
