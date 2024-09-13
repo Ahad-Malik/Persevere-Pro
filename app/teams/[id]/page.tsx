@@ -11,10 +11,10 @@ import {
   User,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
-import { fetchAllTasks, Task } from '../lib/supabase/tasks';
-import { fetchAllMembers, Member } from '../lib/supabase/members';
+import { fetchAllTasksByTeamId, Task } from '../../lib/supabase/tasks';
+import { fetchMembersByTeamId, Member } from '../../lib/supabase/members';
 
 const PolaroidImage = ({ src, alt, onClick }) => (
   <div
@@ -29,18 +29,23 @@ const PolaroidImage = ({ src, alt, onClick }) => (
 const Dashboard = () => {
   const [currentDate, setCurrentDate] = useState(new Date(2023, 8, 1)); // Sept 2023
   const router = useRouter();
+  const { id: teamId } = useParams();
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
-    fetchAllMembers().then((fetchedMembers) => {
-      setMembers(fetchedMembers as Member[]);
-    });
+    fetchMembersByTeamId({ team_id: teamId as string }).then(
+      (fetchedMembers) => {
+        setMembers(fetchedMembers as Member[]);
+      }
+    );
 
-    fetchAllTasks().then((fetchedTasks) => {
-      setTasks(fetchedTasks as Task[]);
-    });
+    fetchAllTasksByTeamId({ team_id: teamId as string }).then(
+      (fetchedTasks) => {
+        setTasks(fetchedTasks as Task[]);
+      }
+    );
   }, []);
 
   const changeMonth = (direction: string) => {
@@ -168,7 +173,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold">Tasks</h2>
             <Link
-              href="/tasks"
+              href={`${teamId}/tasks`}
               className="text-[#39FF14] hover:bg-[#39FF14] hover:text-black px-3 py-2 rounded font-bold text-sm"
             >
               View All

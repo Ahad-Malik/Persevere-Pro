@@ -9,29 +9,33 @@ export interface Member {
   };
 }
 
-export const fetchAllMembers = async () => {
+export const fetchMembersByTeamId = async ({
+  team_id,
+}: {
+  team_id: string;
+}) => {
   const { data: members, error } = await supabase
     .from('members')
-    .select('*, user:user_id (name)');
+    .select('*, user:user_id (name)')
+    .eq('team_id', team_id);
 
   console.log('members', members);
 
   return members;
 };
 
-export const fetchAllMembersBasedOnPoints = async () => {
+export const fetchTeamMembersBasedOnPoints = async ({
+  team_id,
+}: {
+  team_id: string;
+}) => {
   const { data: members, error } = await supabase
     .from('members')
     .select('*, user:user_id (name)')
+    .eq('team_id', team_id)
     .order('points', { ascending: false });
 
   console.log('members', members);
 
   return members;
-};
-
-export const createMember = async (member: Member) => {
-  const {} = await supabase
-    .from('members')
-    .insert({ ...member, team_id: 'a0e4e94a-8f39-4dc5-b774-846ceffe8f1b' });
 };

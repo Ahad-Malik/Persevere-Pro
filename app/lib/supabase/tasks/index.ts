@@ -4,14 +4,27 @@ export interface Task {
   name: string;
 }
 
-export const fetchAllTasks = async () => {
-  const { data: tasks, error } = await supabase.from('tasks').select('*');
+export const fetchAllTasksByTeamId = async ({
+  team_id,
+}: {
+  team_id: string;
+}) => {
+  const { data: tasks, error } = await supabase
+    .from('tasks')
+    .select('*')
+    .eq('team_id', team_id);
 
   return tasks;
 };
 
-export const createTask = async (task: Task) => {
-  const {} = await supabase
-    .from('tasks')
-    .insert({ ...task, team_id: 'a0e4e94a-8f39-4dc5-b774-846ceffe8f1b' });
+export const createTaskByTeamId = async ({
+  name,
+  points,
+  team_id,
+}: {
+  name: string;
+  points: number;
+  team_id: string;
+}) => {
+  const {} = await supabase.from('tasks').insert({ name, points, team_id });
 };
