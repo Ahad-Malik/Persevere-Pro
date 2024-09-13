@@ -2,7 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Task, fetchAllTasks, createTask } from '../../../lib/supabase/tasks';
+import {
+  Task,
+  createTaskByTeamId,
+  fetchAllTasksByTeamId,
+} from '../../../lib/supabase/tasks';
 import {
   ChevronLeft,
   Calendar,
@@ -17,34 +21,43 @@ import {
 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import {
-  fetchAllMembers,
-  fetchAllMembersBasedOnPoints,
+  fetchTeamMembersBasedOnPoints,
   Member,
 } from '../../../lib/supabase/members';
 import { useParams } from 'next/navigation';
 
 const TasksPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newTaskName, setNewTaskName] = useState('');
   const [members, setMembers] = useState<Member[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+
+  const [newTaskName, setNewTaskName] = useState('');
+  const [newTaskPoints, setNewTasksPoints] = useState(0);
 
   const { id: teamId } = useParams();
 
   useEffect(() => {
-    fetchAllMembersBasedOnPoints().then((fetchedMembers) => {
-      setMembers(fetchedMembers as Member[]);
-    });
+    fetchTeamMembersBasedOnPoints({ team_id: teamId as string }).then(
+      (fetchedMembers) => {
+        setMembers(fetchedMembers as Member[]);
+      }
+    );
 
-    fetchAllTasks().then((fetchedTasks) => {
-      setTasks(fetchedTasks as Task[]);
-    });
+    fetchAllTasksByTeamId({ team_id: teamId as string }).then(
+      (fetchedTasks) => {
+        setTasks(fetchedTasks as Task[]);
+      }
+    );
   }, []);
 
   const handleAddTask = async () => {
     if (newTaskName.trim() === '') return;
 
-    await createTask({ name: newTaskName });
+    await createTaskByTeamId({
+      name: newTaskName,
+      points: newTaskPoints,
+      team_id: teamId as string,
+    });
     setNewTaskName('');
     setIsModalOpen(false);
   };
@@ -84,7 +97,7 @@ const TasksPage = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col p-6 bg-black">
           <div className="flex justify-between items-center mb-6">
-            <Link href={`/team/${teamId}`} className="text-[#39FF14]">
+            <Link href={`/teams/${teamId}`} className="text-[#39FF14]">
               <ChevronLeft className="h-6 w-6" />
             </Link>
             <div className="bg-[#39FF14] text-black px-4 py-2 rounded-full font-bold">
@@ -150,6 +163,13 @@ const TasksPage = () => {
               value={newTaskName}
               onChange={(e) => setNewTaskName(e.target.value)}
               placeholder="Enter task name"
+              className="w-full p-2 mb-4 bg-[#2A2A2A] text-white rounded"
+            />
+            <input
+              type="number"
+              value={newTaskPoints}
+              onChange={(e) => setNewTasksPoints(+e.target.value)}
+              placeholder="Enter task points"
               className="w-full p-2 mb-4 bg-[#2A2A2A] text-white rounded"
             />
             <button

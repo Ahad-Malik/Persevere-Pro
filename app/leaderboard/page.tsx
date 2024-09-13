@@ -3,15 +3,20 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, Star, Settings } from 'lucide-react';
 import Link from 'next/link';
-import { fetchAllMembersBasedOnPoints, Member } from '../lib/supabase/members';
+import { fetchTeamMembersBasedOnPoints, Member } from '../lib/supabase/members';
+import { useParams } from 'next/navigation';
 
 const ScoreboardPage = () => {
   const [members, setMembers] = useState<Member[]>([]);
 
+  const { id: teamId } = useParams();
+
   useEffect(() => {
-    fetchAllMembersBasedOnPoints().then((fetchedMembers) => {
-      setMembers(fetchedMembers as Member[]);
-    });
+    fetchTeamMembersBasedOnPoints({ team_id: teamId as string }).then(
+      (fetchedMembers) => {
+        setMembers(fetchedMembers as Member[]);
+      }
+    );
   }, []);
 
   return (

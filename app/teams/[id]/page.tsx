@@ -13,8 +13,8 @@ import {
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
-import { fetchAllTasks, Task } from '../../lib/supabase/tasks';
-import { fetchAllMembers, Member } from '../../lib/supabase/members';
+import { fetchAllTasksByTeamId, Task } from '../../lib/supabase/tasks';
+import { fetchMembersByTeamId, Member } from '../../lib/supabase/members';
 
 const PolaroidImage = ({ src, alt, onClick }) => (
   <div
@@ -35,13 +35,17 @@ const Dashboard = () => {
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
-    fetchAllMembers().then((fetchedMembers) => {
-      setMembers(fetchedMembers as Member[]);
-    });
+    fetchMembersByTeamId({ team_id: teamId as string }).then(
+      (fetchedMembers) => {
+        setMembers(fetchedMembers as Member[]);
+      }
+    );
 
-    fetchAllTasks().then((fetchedTasks) => {
-      setTasks(fetchedTasks as Task[]);
-    });
+    fetchAllTasksByTeamId({ team_id: teamId as string }).then(
+      (fetchedTasks) => {
+        setTasks(fetchedTasks as Task[]);
+      }
+    );
   }, []);
 
   const changeMonth = (direction: string) => {
