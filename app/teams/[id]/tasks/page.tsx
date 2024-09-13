@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Task, fetchAllTasks, createTask } from '../lib/supabase/tasks';
+import { Task, fetchAllTasks, createTask } from '../../../lib/supabase/tasks';
 import {
   ChevronLeft,
   Calendar,
@@ -20,13 +20,16 @@ import {
   fetchAllMembers,
   fetchAllMembersBasedOnPoints,
   Member,
-} from '../lib/supabase/members';
+} from '../../../lib/supabase/members';
+import { useParams } from 'next/navigation';
 
 const TasksPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
   const [members, setMembers] = useState<Member[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+
+  const { id: teamId } = useParams();
 
   useEffect(() => {
     fetchAllMembersBasedOnPoints().then((fetchedMembers) => {
@@ -81,7 +84,7 @@ const TasksPage = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col p-6 bg-black">
           <div className="flex justify-between items-center mb-6">
-            <Link href="/dashboard" className="text-[#39FF14]">
+            <Link href={`/team/${teamId}`} className="text-[#39FF14]">
               <ChevronLeft className="h-6 w-6" />
             </Link>
             <div className="bg-[#39FF14] text-black px-4 py-2 rounded-full font-bold">
