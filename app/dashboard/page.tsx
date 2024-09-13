@@ -76,12 +76,8 @@ const Dashboard = () => {
     3: '/api/placeholder/100/100',
   };
 
-  const handleImageClick = (day) => {
-    router.push(
-      `/gallery/${currentDate.getFullYear()}/${
-        currentDate.getMonth() + 1
-      }/${day}`
-    );
+  const handleImageClick = (day: string) => {
+    router.push(`/gallery/${currentDate.getFullYear()}/${currentDate.getMonth() + 1}/${day}`);
   };
 
   return (
