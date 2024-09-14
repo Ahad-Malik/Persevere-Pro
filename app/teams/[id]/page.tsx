@@ -77,16 +77,10 @@ const Dashboard = () => {
 
   const polaroidDates = {
     1: '/images/ok.jpg',
-    2: '/api/placeholder/100/100',
-    3: '/api/placeholder/100/100',
   };
 
   const handleImageClick = (day: string) => {
-    router.push(
-      `/gallery/${currentDate.getFullYear()}/${
-        currentDate.getMonth() + 1
-      }/${day}`
-    );
+    router.push(`/teams/${teamId}/gallery`);
   };
 
   return (

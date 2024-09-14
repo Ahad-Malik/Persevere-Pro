@@ -64,7 +64,10 @@ const TasksPage: React.FC = () => {
       try {
         const [fetchedMembers, fetchedTasks] = await Promise.all([
           fetchTeamMembersBasedOnPoints({ team_id: teamId as string }),
-          fetchAllTasksByTeamId({ team_id: teamId as string }),
+          fetchAllTasksByTeamId({
+            team_id: teamId as string,
+            member_id: memberId as string,
+          }),
         ]);
 
         setMembers(fetchedMembers as Member[]);
@@ -194,15 +197,6 @@ const TasksPage: React.FC = () => {
 
           <h1 className="text-4xl font-bold mb-2">Good Morning,</h1>
           <h2 className="text-3xl font-bold mb-6">Ahad.</h2>
-          <div
-            className="bg-[#39FF14] rounded-lg p-4 mb-6 text-black relative"
-            onClick={() => handleTaskClick(tasks[0])}
-          >
-            <h3 className="text-xl font-bold">Cardio and HIIT Workout</h3>
-            <div className="absolute bottom-4 right-4 flex items-center">
-              <Clock className="h-5 w-5 mr-2" />
-            </div>
-          </div>
 
           <div className="flex justify-between mb-6">
             <div className="flex items-center">

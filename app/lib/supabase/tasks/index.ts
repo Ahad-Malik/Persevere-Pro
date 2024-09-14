@@ -5,7 +5,7 @@ export interface Task {
   name: string;
   description?: string;
   points: number;
-  images: { image_url: string; member_id: string }[];
+  images: { imageUrl: string; member_name: string; member_id: string }[];
 }
 
 export const fetchAllTasksByTeamId = async ({
@@ -20,6 +20,15 @@ export const fetchAllTasksByTeamId = async ({
     .select('*')
     .eq('team_id', team_id)
     .eq('status', 'open');
+
+  return tasks || [];
+};
+
+export const fetchAllTasksOfTeam = async ({ team_id }: { team_id: string }) => {
+  const { data: tasks, error } = await supabase
+    .from('tasks')
+    .select('*')
+    .eq('team_id', team_id);
 
   return tasks || [];
 };
@@ -105,7 +114,9 @@ export const markTaskAsCompleted = async ({
   } else {
     imagesArr.push({
       member_id: memberId,
-      imageUrl: supabase.storage.from('teams_bucket').getPublicUrl(imagePath!),
+      member_name: 'Ahad Malik',
+      imageUrl: supabase.storage.from('teams_bucket').getPublicUrl(imagePath!)
+        .data.publicUrl,
     });
   }
 

@@ -12,19 +12,24 @@ const UserProfilePage = () => {
         <div className="w-48 bg-[#121212] p-4 flex flex-col">
           <ul className="space-y-2 flex-grow">
             <li className="py-1 px-2 hover:bg-[#2A2A2A] rounded">
-              <Link href="/" className="block">Home</Link>
-            </li>
-            <li className="py-1 px-2 hover:bg-[#2A2A2A] rounded">
-              <Link href="/leaderboard" className="block">Scoreboard</Link>
+              <Link href="/" className="block">
+                Home
+              </Link>
             </li>
             <li className="py-1 px-2 bg-[#2A2A2A] rounded">
-              <Link href="/profile" className="block">Profile</Link>
+              <Link href="/profile" className="block">
+                Profile
+              </Link>
             </li>
             <li className="py-1 px-2 hover:bg-[#2A2A2A] rounded">
-              <Link href="/settings" className="block">Settings</Link>
+              <Link href="/settings" className="block">
+                Settings
+              </Link>
             </li>
             <li className="py-1 px-2 hover:bg-[#2A2A2A] rounded">
-              <Link href="/about" className="block">About</Link>
+              <Link href="/about" className="block">
+                About
+              </Link>
             </li>
           </ul>
         </div>
@@ -35,10 +40,14 @@ const UserProfilePage = () => {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white">Profile</h2>
             </div>
-            
+
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
-                <img src="images/me.jpeg" alt="Profile" className="w-20 h-20 rounded-full mr-4" />
+                <img
+                  src="images/me.jpeg"
+                  alt="Profile"
+                  className="w-20 h-20 rounded-full mr-4"
+                />
                 <div>
                   <h3 className="text-xl font-bold">Ahad Malik</h3>
                   <p className="text-sm text-gray-400">Joined: 6 June 2023</p>
@@ -55,22 +64,26 @@ const UserProfilePage = () => {
                 <p className="text-white">Ahad Malik</p>
               </div>
               <div className="bg-[#1E1E1E] p-3 rounded">
-                <span className="text-[#39FF14] text-sm">Ranking previous month</span>
+                <span className="text-[#39FF14] text-sm">
+                  Ranking previous month
+                </span>
                 <p className="text-white">#4</p>
-              </div> 
+              </div>
               <div className="bg-[#1E1E1E] p-3 rounded">
                 <span className="text-[#39FF14] text-sm">Current Ranking</span>
                 <p className="text-white">#1</p>
               </div>
               <div className="bg-[#1E1E1E] p-3 rounded">
-                <span className="text-[#39FF14] text-sm">Total Valors collected</span>
+                <span className="text-[#39FF14] text-sm">
+                  Total Valors collected
+                </span>
                 <p className="text-white">2500</p>
               </div>
             </div>
 
             <div>
               <h4 className="text-[#39FF14] text-sm mb-2">Note:</h4>
-              <textarea 
+              <textarea
                 className="w-full bg-[#1E1E1E] text-white p-3 rounded"
                 rows="4"
                 placeholder="Write something about you..."
