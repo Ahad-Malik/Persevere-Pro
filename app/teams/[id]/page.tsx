@@ -82,7 +82,11 @@ const Dashboard = () => {
   };
 
   const handleImageClick = (day: string) => {
-    router.push(`/gallery/${currentDate.getFullYear()}/${currentDate.getMonth() + 1}/${day}`);
+    router.push(
+      `/gallery/${currentDate.getFullYear()}/${
+        currentDate.getMonth() + 1
+      }/${day}`
+    );
   };
 
   return (
@@ -195,10 +199,10 @@ const Dashboard = () => {
 
           <div className="mt-auto">
             <Link
-              href="/leaderboard"
+              href={`/teams/${teamId}/leaderboard`}
               className="bg-[#39FF14] text-black px-3 py-2 rounded font-bold block text-center text-sm"
             >
-              Scoreboard #4
+              Scoreboard
             </Link>
           </div>
         </div>

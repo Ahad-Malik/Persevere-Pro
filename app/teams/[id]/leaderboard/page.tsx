@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, Star, Settings } from 'lucide-react';
 import Link from 'next/link';
-import { fetchTeamMembersBasedOnPoints, Member } from '../lib/supabase/members';
+import {
+  fetchTeamMembersBasedOnPoints,
+  Member,
+} from '../../../lib/supabase/members';
 import { useParams } from 'next/navigation';
 
 const ScoreboardPage = () => {
@@ -23,7 +26,7 @@ const ScoreboardPage = () => {
     <div className="flex flex-col h-screen bg-black text-white overflow-hidden">
       {/* Header */}
       <header className="bg-[#121212] p-4 flex justify-between items-center border-b border-[#39FF14]">
-        <Link href="/dashboard">
+        <Link href={`/teams/${teamId}`}>
           <ChevronLeft className="h-6 w-6 hover:text-[#39FF14]" />
         </Link>
         <h1 className="text-xl font-bold">PERSEVERE PRO</h1>

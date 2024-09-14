@@ -13,7 +13,7 @@ import {
   Users,
   Settings,
   MessageSquare,
-  User,
+  User as UserIcon,
   X,
   Upload,
 } from 'lucide-react';
@@ -22,14 +22,18 @@ import {
   Task,
   createTaskByTeamId,
   fetchAllTasksByTeamId,
-  completeTask,
+  markTaskAsCompleted,
 } from '../../../lib/supabase/tasks';
 import {
   fetchTeamMembersBasedOnPoints,
   Member,
 } from '../../../lib/supabase/members';
+import { supabase } from '@/app/lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 const TasksPage: React.FC = () => {
+  const [authUser, setAuthUser] = useState<User | null>(null);
+  const [memberId, setMemberId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -38,20 +42,29 @@ const TasksPage: React.FC = () => {
   const [newTaskPoints, setNewTaskPoints] = useState(0);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { id: teamId } = useParams();
 
   useEffect(() => {
+    const getAuthUser = async () => {
+      const { data: user } = await supabase.auth.getUser();
+      const { data: member } = await supabase
+        .from('members')
+        .select('id')
+        .eq('user_id', user.user?.id)
+        .single();
+
+      setAuthUser(user.user);
+      setMemberId(member?.id);
+    };
+
     const fetchData = async () => {
       try {
-        if (typeof teamId !== 'string') {
-          throw new Error('Invalid team ID');
-        }
-
         const [fetchedMembers, fetchedTasks] = await Promise.all([
-          fetchTeamMembersBasedOnPoints({ team_id: teamId }),
-          fetchAllTasksByTeamId({ team_id: teamId }),
+          fetchTeamMembersBasedOnPoints({ team_id: teamId as string }),
+          fetchAllTasksByTeamId({ team_id: teamId as string }),
         ]);
 
         setMembers(fetchedMembers as Member[]);
@@ -62,19 +75,24 @@ const TasksPage: React.FC = () => {
       }
     };
 
+    getAuthUser();
     fetchData();
   }, [teamId]);
 
   const handleAddTask = async () => {
-    if (newTaskName.trim() === '' || typeof teamId !== 'string') return;
+    if (!authUser) return;
+    if (newTaskName.trim() === '') return;
 
     try {
       await createTaskByTeamId({
         name: newTaskName,
         points: newTaskPoints,
-        team_id: teamId,
+        team_id: teamId as string,
       });
-      const updatedTasks = await fetchAllTasksByTeamId({ team_id: teamId });
+      const updatedTasks = await fetchAllTasksByTeamId({
+        team_id: teamId as string,
+        member_id: memberId as string,
+      });
       setTasks(updatedTasks as Task[]);
       setNewTaskName('');
       setNewTaskPoints(0);
@@ -92,17 +110,26 @@ const TasksPage: React.FC = () => {
   };
 
   const handleCompleteTask = async () => {
-    if (selectedTask && typeof teamId === 'string') {
-      try {
-        await completeTask(selectedTask.id);
-        setIsTaskModalOpen(false);
-        setUploadedImage(null);
-        const updatedTasks = await fetchAllTasksByTeamId({ team_id: teamId });
-        setTasks(updatedTasks as Task[]);
-      } catch (error) {
-        console.error('Error completing task:', error);
-        // Handle error (e.g., show error message to user)
-      }
+    if (!authUser || !memberId) return;
+    if (!selectedTask) return;
+
+    try {
+      await markTaskAsCompleted({
+        id: selectedTask.id,
+        memberId: memberId as string,
+        teamId: teamId as string,
+        file: uploadedImageFile!,
+      });
+      setIsTaskModalOpen(false);
+      setUploadedImage(null);
+      const updatedTasks = await fetchAllTasksByTeamId({
+        team_id: teamId as string,
+        member_id: memberId,
+      });
+      setTasks(updatedTasks as Task[]);
+    } catch (error) {
+      console.error('Error completing task:', error);
+      // Handle error (e.g., show error message to user)
     }
   };
 
@@ -112,13 +139,16 @@ const TasksPage: React.FC = () => {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUploadedImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+
+    if (!file) return;
+
+    setUploadedImageFile(file);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setUploadedImage(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -142,7 +172,7 @@ const TasksPage: React.FC = () => {
           </ul>
           <div className="flex justify-between mt-4">
             <Link href="/profile">
-              <User className="h-5 w-5 hover:text-[#39FF14]" />
+              <UserIcon className="h-5 w-5 hover:text-[#39FF14]" />
             </Link>
             <MessageSquare className="h-5 w-5" />
             <Link href="/settings">
@@ -158,13 +188,16 @@ const TasksPage: React.FC = () => {
               <ChevronLeft className="h-6 w-6" />
             </Link>
             <div className="bg-[#39FF14] text-black px-4 py-2 rounded-full font-bold">
-              <Link href="/leaderboard">Scoreboard #4</Link>
+              <Link href={`/teams/${teamId}/leaderboard`}>Scoreboard</Link>
             </div>
           </div>
 
           <h1 className="text-4xl font-bold mb-2">Good Morning,</h1>
           <h2 className="text-3xl font-bold mb-6">Ahad.</h2>
-          <div className="bg-[#39FF14] rounded-lg p-4 mb-6 text-black relative" onClick={() => handleTaskClick(tasks[0])} >
+          <div
+            className="bg-[#39FF14] rounded-lg p-4 mb-6 text-black relative"
+            onClick={() => handleTaskClick(tasks[0])}
+          >
             <h3 className="text-xl font-bold">Cardio and HIIT Workout</h3>
             <div className="absolute bottom-4 right-4 flex items-center">
               <Clock className="h-5 w-5 mr-2" />
@@ -250,21 +283,28 @@ const TasksPage: React.FC = () => {
                 onClick={() => setIsTaskModalOpen(false)}
               />
             </div>
-            <p className="text-lg mb-4">Points: <span className="text-[#39FF14] font-bold">{selectedTask.points || 10}</span></p>
-            <p className="mb-6 text-gray-300">{selectedTask.description || 'No description available.'}</p>
+            <p className="text-lg mb-4">
+              Points:{' '}
+              <span className="text-[#39FF14] font-bold">
+                {selectedTask.points}
+              </span>
+            </p>
+            <p className="mb-6 text-gray-300">
+              {selectedTask.description || 'No description available.'}
+            </p>
             <div className="mb-6">
               {uploadedImage ? (
                 <div className="relative w-full h-48 mb-4">
-                  <Image 
-                    src={uploadedImage} 
-                    alt="Uploaded image" 
-                    layout="fill" 
-                    objectFit="cover" 
+                  <Image
+                    src={uploadedImage}
+                    alt="Uploaded image"
+                    layout="fill"
+                    objectFit="cover"
                     className="rounded-lg"
                   />
                 </div>
               ) : (
-                <button 
+                <button
                   className="w-full bg-[#2A2A2A] text-white p-3 rounded-lg font-bold mb-2 flex items-center justify-center hover:bg-[#3A3A3A] transition-colors"
                   onClick={handleUploadClick}
                 >
