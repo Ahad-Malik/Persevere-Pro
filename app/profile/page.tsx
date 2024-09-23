@@ -85,7 +85,7 @@ const UserProfilePage = () => {
               <h4 className="text-[#39FF14] text-sm mb-2">Note:</h4>
               <textarea
                 className="w-full bg-[#1E1E1E] text-white p-3 rounded"
-                rows="4"
+                rows={4}
                 placeholder="Write something about you..."
               ></textarea>
             </div>
