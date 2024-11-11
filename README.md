@@ -2,6 +2,51 @@
 
 **Persevere Pro** is a collaborative platform designed to enhance teamwork and optimize performance tracking for athletes, Work teams, and fitness enthusiasts. The platform enables users to manage tasks, track team progress, and foster an environment of accountability, ensuring that everyone on the team stays on top of their goals.
 
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <img src="/images/Dashboard.png" width="800" style="max-width: 100%; height: auto;" alt="Dashboard Interface"/>
+        <br>
+        <h3>Dashboard Interface</h3>
+        <p>Complete overview of tasks, progress, and team activities</p>
+      </td>
+      <td align="center" width="33%">
+        <img src="/images/Tasks.png" width="800" style="max-width: 100%; height: auto;" alt="Task Management"/>
+        <br>
+        <h3>Task Management</h3>
+        <p>Efficiently organize and track team assignments</p>
+      </td>
+      <td align="center" width="33%">
+        <img src="/images/Leaderboard.png" width="800" style="max-width: 100%; height: auto;" alt="Leaderboard"/>
+        <br>
+        <h3>Leaderboard</h3>
+        <p>Track team rankings and achievements</p>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="33%">
+        <img src="/images/Team Creation.png" width="800" style="max-width: 100%; height: auto;" alt="Team Creation"/>
+        <br>
+        <h3>Team Creation</h3>
+        <p>Build and customize your dream team</p>
+      </td>
+      <td align="center" width="33%">
+        <img src="/images/Settings.png" width="800" style="max-width: 100%; height: auto;" alt="Profile Settings"/>
+        <br>
+        <h3>Profile Creation</h3>
+        <p>Personalize your experience and preferences</p>
+      </td>
+      <td align="center" width="33%">
+        <img src="/images/Profile.png" width="800" style="max-width: 100%; height: auto;" alt="Performance Analytics"/>
+        <br>
+        <h3>Performance Analytics</h3>
+        <p>Track progress and measure success</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
 ## Features
 
 - **Dashboard Interface**: Get a complete overview of tasks, team members, and deadlines.
